@@ -1,4 +1,5 @@
 package launcher;
+import utils.ExcelHandler;
 import utils.XMLParser;
 import utils.WordHandler;
 
@@ -8,7 +9,12 @@ public class Appli {
 		 //parser.XML_parse();
 		 //parser.modifyMXL();
 		 WordHandler handler=new WordHandler();
-		 handler.launchWord();
+		 
+		/* handler.createWord();
+		 handler.modifyWord();
+		handler.launchWord();*/
+		ExcelHandler handler2=new ExcelHandler();
+		handler2.createExcel();
 		 
 	 }
 	 
