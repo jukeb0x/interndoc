@@ -11,13 +11,20 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.io.SaveToZipFile;
 import org.docx4j.openpackaging.packages.SpreadsheetMLPackage;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.Parts;
+import org.docx4j.openpackaging.parts.SpreadsheetML.SharedStrings;
 import org.docx4j.openpackaging.parts.SpreadsheetML.WorksheetPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.xlsx4j.exceptions.Xlsx4jException;
 import org.xlsx4j.jaxb.Context;
+import org.xlsx4j.sml.CTRst;
+import org.xlsx4j.sml.CTSst;
+import org.xlsx4j.sml.CTXstringWhitespace;
 import org.xlsx4j.sml.Cell;
 import org.xlsx4j.sml.Row;
+import org.xlsx4j.sml.STCellType;
 import org.xlsx4j.sml.SheetData;
 
 
@@ -72,5 +79,61 @@ public class ExcelHandler {
 		catch(Xlsx4jException e){}
 		}catch(InvalidFormatException e2){}
 	}
+	
+	public void makeExcel(){
+		try{
+String outputfilepath = "testexcel.xlsx";
+		
+		SpreadsheetMLPackage pkg = SpreadsheetMLPackage.createPackage();
+		
+		WorksheetPart sheet = pkg.createWorksheetPart(new PartName("/xl/worksheets/sheet1.xml"), "Sheet1", 1);
+		
+		addContent(sheet);
+		
+		SaveToZipFile saver = new SaveToZipFile(pkg);
+		saver.save(outputfilepath);
+				
+		System.out.println("\n\n done .. " + outputfilepath);
+		}
+		catch(InvalidFormatException e){} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Docx4JException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+private static void addContent(WorksheetPart sheet) {
+		
+		// Minimal content already present
+		SheetData sheetData = sheet.getJaxbElement().getSheetData();
+				
+		// Now add
+		Row row = Context.getsmlObjectFactory().createRow();
+		Cell cell = Context.getsmlObjectFactory().createCell();
+		cell.setV("1234");
+		row.getC().add(cell);
+		
+		
+		row.getC().add(createCell("hello world!"));
+		
+		sheetData.getRow().add(row);
+	}
+private static Cell createCell(String content) {
+
+	Cell cell = Context.getsmlObjectFactory().createCell();
+	
+	CTXstringWhitespace ctx = Context.getsmlObjectFactory().createCTXstringWhitespace();
+	ctx.setValue(content);
+	
+	CTRst ctrst = new CTRst();
+	ctrst.setT(ctx);
+
+	cell.setT(STCellType.INLINE_STR);
+	cell.setIs(ctrst); // add ctrst as inline string
+	
+	return cell;
+	
+}
 	
 }

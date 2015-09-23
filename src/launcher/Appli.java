@@ -14,7 +14,7 @@ public class Appli {
 		 handler.modifyWord();
 		handler.launchWord();*/
 		ExcelHandler handler2=new ExcelHandler();
-		handler2.createExcel();
+		handler2.makeExcel();
 		 
 	 }
 	 
